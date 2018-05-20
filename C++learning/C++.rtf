@@ -1,0 +1,74 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf400
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green116\blue0;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\csgenericrgb\c0\c45600\c0;\csgray\c100000;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab543
+\pard\tx543\pardeftab543\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf2 \cb3 #include <SDL2/SDL.h>\
+#include "SDL2/SDL.h"\
+#include <SDL2/SDL_image.h>\
+using namespace std;\
+\
+const int sw=800;\
+const int sh=450;\
+\
+int main()\{\
+    SDL_Init(SDL_INIT_EVERYTHING);\
+    IMG_Init(IMG_INIT_PNG);\
+    \
+    bool quit=false;\
+    bool shoot=false;\
+    SDL_Event event;\
+    Uint32 time;\
+    unsigned  char frame=0;\
+    \
+    \
+    SDL_Window* window = SDL_CreateWindow("Sprite",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,sw,sh,0);\
+    SDL_Renderer* render = SDL_CreateRenderer(window,-1,0);\
+    \
+    SDL_Surface* image = IMG_Load("algo.png");\
+    printf("IMG_Load: %s\\n", IMG_GetError());\
+    \
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(render, image);\
+    \
+    while(!quit)\{\
+        if(shoot)\{\
+            time=SDL_GetTicks();\
+            time/=(750/5);\
+            frame=time%5;\
+            if(frame==4)\{\
+                frame = 0;\
+                shoot=false;\
+            \}\
+        \}\
+        SDL_Rect srcrect = \{ frame*96,0,96,96\};\
+        SDL_Rect dstrect = \{ (sw-96)/2, (sh-96)/2, 96, 96 \};\
+        \
+        \
+        SDL_PollEvent(&event);\
+        switch (event.type)\{\
+            case SDL_QUIT:\
+                quit = true;\
+                break;\
+            case SDL_MOUSEBUTTONDOWN:\
+                if(event.button.button == SDL_BUTTON_LEFT) shoot = true;\
+                break;\
+        \}\
+        \
+        SDL_RenderClear(render);\
+        SDL_RenderCopy(render, texture,&srcrect,&dstrect);\
+        SDL_RenderPresent(render);\
+    \}\
+    \
+    SDL_DestroyTexture(texture);\
+    SDL_FreeSurface(image);\
+    SDL_DestroyRenderer(render);\
+    SDL_DestroyWindow(window);\
+    IMG_Quit();\
+    SDL_Quit();\
+    \
+    return 0;\
+\}  \
+}
